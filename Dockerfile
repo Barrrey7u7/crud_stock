@@ -18,4 +18,4 @@ EXPOSE 5000
 ENV FLASK_RUN_HOST=0.0.0.0
 
 # Comando por defecto con Gunicorn (más robusto para producción)
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5001", "app:app"]
