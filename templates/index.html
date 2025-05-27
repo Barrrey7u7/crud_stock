@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock de Videojuegos</title>
+</head>
+<body>
+    <h1>Stock de Videojuegos</h1>
+
+    <form action="/agregar" method="POST">
+        <input type="text" name="titulo" placeholder="Título" required>
+        <input type="text" name="plataforma" placeholder="Plataforma" required>
+        <input type="number" name="piezas" placeholder="Piezas" required>
+        <input type="number" step="0.01" name="precio" placeholder="Precio" required>
+        <button type="submit">Agregar</button>
+    </form>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>No. Artículo</th>
+                <th>Título</th>
+                <th>Plataforma</th>
+                <th>Piezas</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for juego in juegos %}
+            <tr>
+                <td>{{ juego.id }}</td>
+                <td>{{ juego.titulo }}</td>
+                <td>{{ juego.plataforma }}</td>
+                <td>{{ juego.piezas }}</td>
+                <td>${{ juego.precio }}</td>
+                <td>
+                    <form action="/editar/{{ juego.id }}" method="POST" style="display:inline;">
+                        <input type="text" name="titulo" value="{{ juego.titulo }}" required>
+                        <input type="text" name="plataforma" value="{{ juego.plataforma }}" required>
+                        <input type="number" name="piezas" value="{{ juego.piezas }}" required>
+                        <input type="number" step="0.01" name="precio" value="{{ juego.precio }}" required>
+                        <button type="submit">Editar</button>
+                    </form>
+                    <a href="/eliminar/{{ juego.id }}" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

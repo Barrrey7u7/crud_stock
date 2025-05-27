@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres-videojuegos
+    environment:
+      POSTGRES_DB: videojuegos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # evitar conflicto si tienes PostgreSQL local en 5432
+
+  app:
+    build: .
+    container_name: flask-videojuegos
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/videojuegos
+    ports:
+      - "5000:5000"
+    restart: always
+
+volumes:
+  postgres_data:
