@@ -21,6 +21,10 @@ class Videojuego(db.Model):
     piezas = db.Column(db.Integer, nullable=False)
     precio = db.Column(db.Float, nullable=False)
 
+# Crear tablas SIEMPRE al iniciar la app, dentro del contexto de Flask
+with app.app_context():
+    db.create_all()
+
 @app.route('/')
 def index():
     juegos = Videojuego.query.all()
@@ -56,6 +60,5 @@ def editar(id):
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True, host='0.0.0.0', port=5000)
+
