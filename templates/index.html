@@ -1,52 +1,324 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta charset="UTF-8" />
     <title>Stock de Videojuegos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            margin: 40px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Botones principales */
+        button.open-add-btn {
+            display: block;
+            margin: 0 auto 25px auto;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 22px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button.open-add-btn:hover {
+            background-color: #357abd;
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-color: white;
+            padding: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        thead {
+            background-color: #4a90e2;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background-color: #f0f7ff;
+        }
+
+        button.edit-btn {
+            background-color: #5bc0de;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        button.edit-btn:hover {
+            background-color: #31b0d5;
+        }
+
+        a.delete-link {
+            color: #d9534f;
+            font-weight: 600;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        a.delete-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal base */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            position: relative;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #4a90e2;
+            text-align: center;
+        }
+
+        .modal-content form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-content input[type="text"],
+        .modal-content input[type="number"] {
+            padding: 8px 12px;
+            font-size: 1rem;
+            border: 1.5px solid #bbb;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        .modal-content input[type="text"]:focus,
+        .modal-content input[type="number"]:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 5px rgba(74,144,226,0.5);
+        }
+
+        .modal-content button[type="submit"] {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .modal-content button[type="submit"]:hover {
+            background-color: #4cae4c;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #aaa;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #444;
+        }
+
+        @media (max-width: 500px) {
+            .modal-content {
+                width: 90%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Stock de Videojuegos</h1>
+  <h1>
+    <i class="fas fa-trophy icon"></i>
+    Stock de Videojuegos
+    <i class="fas fa-gamepad icon"></i>
+</h1>
+    <!-- Botón para abrir modal Agregar -->
+    <button class="open-add-btn" id="openAddBtn">Agregar Nuevo Videojuego</button>
 
-    <form action="/agregar" method="POST">
-        <input type="text" name="titulo" placeholder="Título" required>
-        <input type="text" name="plataforma" placeholder="Plataforma" required>
-        <input type="number" name="piezas" placeholder="Piezas" required>
-        <input type="number" step="0.01" name="precio" placeholder="Precio" required>
-        <button type="submit">Agregar</button>
-    </form>
+    <!-- Tabla de juegos -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>No. Artículo</th>
+                    <th>Título</th>
+                    <th>Plataforma</th>
+                    <th>Piezas</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for juego in juegos %}
+                <tr data-id="{{ juego.id }}" data-titulo="{{ juego.titulo }}" data-plataforma="{{ juego.plataforma }}" data-piezas="{{ juego.piezas }}" data-precio="{{ juego.precio }}">
+                    <td>{{ juego.id }}</td>
+                    <td>{{ juego.titulo }}</td>
+                    <td>{{ juego.plataforma }}</td>
+                    <td>{{ juego.piezas }}</td>
+                    <td>${{ juego.precio }}</td>
+                    <td>
+                        <button class="edit-btn">Editar</button>
+                        <a href="/eliminar/{{ juego.id }}" class="delete-link" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>No. Artículo</th>
-                <th>Título</th>
-                <th>Plataforma</th>
-                <th>Piezas</th>
-                <th>Precio</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for juego in juegos %}
-            <tr>
-                <td>{{ juego.id }}</td>
-                <td>{{ juego.titulo }}</td>
-                <td>{{ juego.plataforma }}</td>
-                <td>{{ juego.piezas }}</td>
-                <td>${{ juego.precio }}</td>
-                <td>
-                    <form action="/editar/{{ juego.id }}" method="POST" style="display:inline;">
-                        <input type="text" name="titulo" value="{{ juego.titulo }}" required>
-                        <input type="text" name="plataforma" value="{{ juego.plataforma }}" required>
-                        <input type="number" name="piezas" value="{{ juego.piezas }}" required>
-                        <input type="number" step="0.01" name="precio" value="{{ juego.precio }}" required>
-                        <button type="submit">Editar</button>
-                    </form>
-                    <a href="/eliminar/{{ juego.id }}" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Modal de edición -->
+    <div id="editModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitleEdit">
+        <div class="modal-content">
+            <button class="close-btn" aria-label="Cerrar modal">&times;</button>
+            <h2 id="modalTitleEdit">Editar Videojuego</h2>
+            <form id="editForm" method="POST">
+                <input type="text" name="titulo" placeholder="Título" required />
+                <input type="text" name="plataforma" placeholder="Plataforma" required />
+                <input type="number" name="piezas" placeholder="Piezas" required min="0" />
+                <input type="number" step="0.01" name="precio" placeholder="Precio" required min="0" />
+                <button type="submit">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de agregar -->
+    <div id="addModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitleAdd">
+        <div class="modal-content">
+            <button class="close-btn" aria-label="Cerrar modal">&times;</button>
+            <h2 id="modalTitleAdd">Agregar Nuevo Videojuego</h2>
+            <form id="addForm" action="/agregar" method="POST">
+                <input type="text" name="titulo" placeholder="Título" required />
+                <input type="text" name="plataforma" placeholder="Plataforma" required />
+                <input type="number" name="piezas" placeholder="Piezas" required min="0" />
+                <input type="number" step="0.01" name="precio" placeholder="Precio" required min="0" />
+                <button type="submit">Agregar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modales
+        const editModal = document.getElementById('editModal');
+        const addModal = document.getElementById('addModal');
+
+        // Formularios
+        const editForm = document.getElementById('editForm');
+        const addForm = document.getElementById('addForm');
+
+        // Botón abrir modal agregar
+        const openAddBtn = document.getElementById('openAddBtn');
+
+        // Botones cerrar modal (todos los que tengan clase close-btn)
+        const closeButtons = document.querySelectorAll('.close-btn');
+
+        // Abre modal agregar al hacer clic
+        openAddBtn.addEventListener('click', () => {
+            addModal.style.display = 'flex';
+        });
+
+        // Cierra modales al hacer clic en la "X"
+        closeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                editModal.style.display = 'none';
+                addModal.style.display = 'none';
+            });
+        });
+
+        // Cierra modales si clic fuera del contenido
+        window.addEventListener('click', (e) => {
+            if (e.target === editModal) {
+                editModal.style.display = 'none';
+            }
+            if (e.target === addModal) {
+                addModal.style.display = 'none';
+            }
+        });
+
+        // Abre modal editar y rellena el formulario con datos de la fila
+        document.querySelectorAll('button.edit-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const tr = e.target.closest('tr');
+                const id = tr.dataset.id;
+                const titulo = tr.dataset.titulo;
+                const plataforma = tr.dataset.plataforma;
+                const piezas = tr.dataset.piezas;
+                const precio = tr.dataset.precio;
+
+                editForm.action = `/editar/${id}`;
+                editForm.titulo.value = titulo;
+                editForm.plataforma.value = plataforma;
+                editForm.piezas.value = piezas;
+                editForm.precio.value = precio;
+
+                editModal.style.display = 'flex';
+            });
+        });
+    </script>
 </body>
 </html>
